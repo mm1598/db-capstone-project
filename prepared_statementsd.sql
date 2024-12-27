@@ -96,15 +96,9 @@ CREATE PROCEDURE AddBooking(
     IN table_number INT
 )
 BEGIN
-    -- Declare variables for validation
-    DECLARE table_exists INT DEFAULT 0;
-    
     -- Insert new booking record
     INSERT INTO Bookings (BookingID, CustomerID, BookingDate, TableNumber)
     VALUES (booking_id, customer_id, booking_date, table_number);
-    
-    -- Confirm booking added
-    SELECT CONCAT('New booking added for customer ', customer_id, ' on ', booking_date) AS 'Confirmation';
 END //
 
 DELIMITER ;
@@ -146,23 +140,9 @@ CREATE PROCEDURE CancelBooking(
     IN booking_id INT
 )
 BEGIN
-    -- Declare variables for validation
-    DECLARE booking_exists INT DEFAULT 0;
-    
-    -- Check if booking exists
-    SELECT COUNT(*) INTO booking_exists 
-    FROM Bookings 
+    -- Delete booking
+    DELETE FROM Bookings 
     WHERE BookingID = booking_id;
-    
-    -- Delete booking if it exists
-    IF booking_exists > 0 THEN
-        DELETE FROM Bookings 
-        WHERE BookingID = booking_id;
-        
-        SELECT CONCAT('Booking ', booking_id, ' cancelled') AS 'Confirmation';
-    ELSE
-        SELECT CONCAT('Booking ', booking_id, ' does not exist') AS 'Error';
-    END IF;
 END //
 
 DELIMITER ;
