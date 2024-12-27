@@ -84,6 +84,94 @@ DELIMITER ;
 -- Example usage of CancelOrder
 CALL CancelOrder(1);
 
+-- New Booking Management Procedures
+
+-- AddBooking procedure
+DELIMITER //
+
+CREATE PROCEDURE AddBooking(
+    IN booking_id INT,
+    IN customer_id INT,
+    IN booking_date DATE,
+    IN table_number INT
+)
+BEGIN
+    -- Declare variables for validation
+    DECLARE table_exists INT DEFAULT 0;
+    
+    -- Insert new booking record
+    INSERT INTO Bookings (BookingID, CustomerID, BookingDate, TableNumber)
+    VALUES (booking_id, customer_id, booking_date, table_number);
+    
+    -- Confirm booking added
+    SELECT CONCAT('New booking added for customer ', customer_id, ' on ', booking_date) AS 'Confirmation';
+END //
+
+DELIMITER ;
+
+-- UpdateBooking procedure
+DELIMITER //
+
+CREATE PROCEDURE UpdateBooking(
+    IN booking_id INT,
+    IN booking_date DATE
+)
+BEGIN
+    -- Declare variables for validation
+    DECLARE booking_exists INT DEFAULT 0;
+    
+    -- Check if booking exists
+    SELECT COUNT(*) INTO booking_exists 
+    FROM Bookings 
+    WHERE BookingID = booking_id;
+    
+    -- Update booking if it exists
+    IF booking_exists > 0 THEN
+        UPDATE Bookings 
+        SET BookingDate = booking_date 
+        WHERE BookingID = booking_id;
+        
+        SELECT CONCAT('Booking ', booking_id, ' updated to ', booking_date) AS 'Confirmation';
+    ELSE
+        SELECT CONCAT('Booking ', booking_id, ' does not exist') AS 'Error';
+    END IF;
+END //
+
+DELIMITER ;
+
+-- CancelBooking procedure
+DELIMITER //
+
+CREATE PROCEDURE CancelBooking(
+    IN booking_id INT
+)
+BEGIN
+    -- Declare variables for validation
+    DECLARE booking_exists INT DEFAULT 0;
+    
+    -- Check if booking exists
+    SELECT COUNT(*) INTO booking_exists 
+    FROM Bookings 
+    WHERE BookingID = booking_id;
+    
+    -- Delete booking if it exists
+    IF booking_exists > 0 THEN
+        DELETE FROM Bookings 
+        WHERE BookingID = booking_id;
+        
+        SELECT CONCAT('Booking ', booking_id, ' cancelled') AS 'Confirmation';
+    ELSE
+        SELECT CONCAT('Booking ', booking_id, ' does not exist') AS 'Error';
+    END IF;
+END //
+
+DELIMITER ;
+
+-- Test the new procedures
+CALL AddBooking(5, 1, '2024-01-15', 3);
+CALL UpdateBooking(5, '2024-01-16');
+CALL CancelBooking(5);
+
 -- Additional helper procedures for testing
 
 -- Procedure to view all orders
